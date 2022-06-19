@@ -115,6 +115,7 @@ public class ConfigUtils {
      */
     public void setValue(String section, String key, Object value) {
         Objects.requireNonNull(fileConfig.getConfigurationSection(section)).set(key, value);
+        save();
     }
 
     /**
@@ -124,6 +125,7 @@ public class ConfigUtils {
      */
     public void setValue(String key, Object value) {
         fileConfig.set(key, value);
+        save();
     }
 
     /**
@@ -132,6 +134,15 @@ public class ConfigUtils {
      */
     public File getConfigFile() {
         return configFile;
+    }
+
+    private void save() {
+        try {
+            fileConfig.save(configFile);
+        } catch (IOException e) {
+            System.out.println("Error while saving config: ");
+            e.printStackTrace();
+        }
     }
 
 }
