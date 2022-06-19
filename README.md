@@ -90,32 +90,24 @@ The `InventoryBuilder` allows to easily create custom inventories and manage eve
 **Example**:
 
 ```java
-
-
-### ItemBuilder
-
-The `ItemBuilder` allows to easily create custom items
-
-**Example**:
-
-```java
-// Creating a new ItemBuilder with the material DIAMOND_BLOCK
-ItemStack myCustomItem = new ItemBuilder(Material.DIAMOND_BLOCK)
-  // Changing the display name using hex and color codes
-  .name("&cMy cool red #ff0000Custom Item")
-  // Adding a custom lore
-  .addLore("Hello there")
-  // Setting the amount of items
-  .amount(3)
-  // Adding an enchantment with the level 7
-  .enchant(Enchantment.ARROW_INFINITE, 7)
-  // Adding an item flag to hide the enchantments
-  .flag(ItemFlag.HIDE_ENCHANTS)
-  // Making the item unbreakable
-  .unbreakable()
-  // Building / Creating the ItemStack
+// Creating a new InventoryBuilder with the gui title "Title of the &cGUI" and a size of 27
+Inventory inventoryBuilder = new InventoryBuilder("Title of the &cGUI", 27)
+  // Adding an item stack at the position 0 with an event we handle (Click / Drag etc.)
+  .addItem(new ItemStack(Material.GLASS), 0, e -> {
+    Bukkit.broadcastMessage("Clicked on glass!");
+  })
+  // Adding an InventoryItem at the position 2 with an event we handle (Click / Drag etc.)
+  .addItem(new InventoryItem(new ItemStack(Material.CLOCK), 2, e -> {
+    Bukkit.broadcastMessage("You clicked on my special InventoryItem");
+  }))
+  // Adding a border (Surrounding the outer row) of the gui with this ItemStack
+  .border(new ItemStack(Material.BARRIER))
+  // Adding a placeholder which will be put at every empty slot in the inventory
+  .placeholder(new ItemStack(Material.PLAYER_HEAD))
+  // Allowing users to put in items (Taking / Putting is not allowed by default)
+  .addOption(InventoryBuilder.Option.PUT_ITEM)
+  // Building the gui to receive an inventory
   .build();
-```
 ```
 
 ### ItemBuilder
