@@ -50,7 +50,11 @@ public class ItemBuilder {
      * @return Instance of the current state of the builder
      */
     public ItemBuilder name(String name) {
-        this.name = (name == null ? "§r" : TextParser.parseHexForChat(name));
+        if(name == null || name.isEmpty()) {
+            this.name = "§r";
+        } else {
+            this.name = TextParser.parseHexForChat(name);
+        }
         return this;
     }
 
@@ -72,7 +76,11 @@ public class ItemBuilder {
      * @apiNote Every new addLore will be added in a seperate line
      */
     public ItemBuilder addLore(String lore) {
-        lores.add(TextParser.parseHexForChat(lore));
+        if(lore == null || lore.isEmpty()) {
+            lores.add("§a");
+        } else {
+            lores.add(TextParser.parseHexForChat(lore));
+        }
         return this;
     }
 
