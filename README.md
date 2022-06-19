@@ -43,6 +43,13 @@ exampleConfig.refresh();
 File configFile = exampleConfig.getConfigFile();
 ```
 
+**Example Config**:
+```
+test: 'Value of test'
+exampleSection:
+  exampleKey: 'This is my value'
+```
+
 ### TextParser
 
 The `TextParser` is a simple way to replace every hex code and/or color code in a string
