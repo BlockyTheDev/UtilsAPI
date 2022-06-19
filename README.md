@@ -23,7 +23,7 @@ EventUtils.registerEvent(AsyncPlayerChatEvent.class, e -> {
 ### Config
 
 The `ConfigUtils` is a simple way to create your custom config without needing to code a lot
-You need to provide a config.yml (or your choosen name) in the src folder & the build of your project (prefilled with your default values).
+You need to provide the config.yml (or your choosen name) in the src folder of your project (prefilled with your default values).
 When you export your plugin you need to add your config.yml to your export. (You need to export it along with your other files)
 
 **Example**:
