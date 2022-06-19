@@ -83,6 +83,15 @@ new ParticleBuilder(Particle.FLAME)
   .send();
 ```
 
+### InventoryBuilder
+
+The `InventoryBuilder` allows to easily create custom inventories and manage every item event without additional methods or classes
+
+**Example**:
+
+```java
+
+
 ### ItemBuilder
 
 The `ItemBuilder` allows to easily create custom items
@@ -106,6 +115,60 @@ ItemStack myCustomItem = new ItemBuilder(Material.DIAMOND_BLOCK)
   .unbreakable()
   // Building / Creating the ItemStack
   .build();
+```
+```
+
+### ItemBuilder
+
+The `ItemBuilder` allows to easily create custom items
+
+**Example**:
+
+```java
+// Creating a new ItemBuilder with the material DIAMOND_BLOCK
+ItemStack myCustomItem = new ItemBuilder(Material.DIAMOND_BLOCK)
+  // Changing the display name using hex and color codes
+  .name("&cMy cool red #ff0000Custom Item")
+  // Adding a custom lore
+  .addLore("Hello there")
+  // Setting the amount of items
+  .amount(3)
+  // Adding an enchantment with the level 7
+  .enchant(Enchantment.ARROW_INFINITE, 7)
+  // Adding an item flag to hide the enchantments
+  .flag(ItemFlag.HIDE_ENCHANTS)
+  // Making the item unbreakable
+  .unbreakable()
+  // Building / Creating the ItemStack
+  .build();
+```
+
+### MultiPageInventory
+
+The `MultiPageInventory` allows to easily create inventories with multiple pages, buttons, items with events & more
+
+**Example**:
+
+```java
+// Creating a new MultiPageInventory
+Inventory multiPageInventory = new MultiPageInventory()
+  // Adding the first page with an inventory size of 27
+  .addPage(new InventoryBuilder("Page 1", 27))
+  // Adding another inventory with a size of 36 which contains an item with a special event
+  .addPage(new InventoryBuilder("Page 2", 36).addItem(new ItemStack(Material.DIAMOND_BLOCK), 0, e -> {
+    System.out.println("You clicked on my item in a multi paged inventory");
+   }))
+  // Adding a button of a custom item stack which should be at slot 1 in inventory 1. It redirects to page 2
+  .button(new MultiPageButton(new ItemStack(Material.STONE_BUTTON), 1, 1, 2))
+  // Adding a button of a custom item stack which should be at slot 0 in inventory 1. It redirects to the next page
+  .button(new MultiPageButton(new ItemStack(Material.STONE_BUTTON), 0, 1, MultiPageButton.ButtonType.NEXT))
+  // Adding a global button of a custom item stack which should be at slot 10 in every inventory. It redirects to the last page and disappears if it is invalid
+  // shouldStayWhenInvalid means, that for example if it is false and a button to the next page would be on the last page of the MultiInventory, it would disappear because it makes no sense for it to be there (Because there is no next page)
+  .globalButton(new MultiPageButton(new ItemStack(Material.CLOCK), 10, MultiPageButton.ButtonType.LAST, false))
+  // Building the inventory
+  .build();
+
+// Now we could open this inventory to a player and the api would handle everything else
 ```
 
 Copyright https://DontBlameMe.dev
