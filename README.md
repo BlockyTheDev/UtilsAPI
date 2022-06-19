@@ -1,6 +1,8 @@
 # UtilsAPI
 UtilsAPI is a powerful java plugin api. It provides many features. examples: simple event registration, multi page inventories and more
 
+**You maybe want to add depend: [UtilsAPI] to your plugin.yml**
+
 ### EventSystem
 
 The `EventSystem` is a simple way to register events without needing to create multiple methods
