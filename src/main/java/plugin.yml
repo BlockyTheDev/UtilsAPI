@@ -1,6 +1,6 @@
 name: UtilsAPI
 main: dev.dontblameme.utilsapi.main.Main
-version: v1.2
+version: 1.3
 author: DontBlameMe
 description: UtilsAPI is a core API
 api-version: 1.18

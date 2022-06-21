@@ -29,12 +29,12 @@ public class ViewerHandler implements HumanEntity {
     private InventoryBuilder instance;
     private BiConsumer<Event, Boolean> handler;
 
-    public ViewerHandler(InventoryBuilder instance){
-        this.instance=instance;
+    public ViewerHandler(InventoryBuilder instance) {
+        this.instance = instance;
     }
 
-    public ViewerHandler(BiConsumer<Event, Boolean> handler){
-        this.handler=handler;
+    public ViewerHandler(BiConsumer<Event, Boolean> handler) {
+        this.handler = handler;
     }
 
     public BiConsumer<Event, Boolean> getConsumer() {

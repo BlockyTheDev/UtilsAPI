@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,13 +17,10 @@ import java.util.function.Consumer;
 public class InventoryBuilder {
 
     @Getter
-    private final String name;
-    @Getter
-    private final int size;
+    private final Inventory inventory;
     private final List<InventoryItem> items = new ArrayList<>();
     @Getter
     private final List<Option> options = new ArrayList<>();
-    private final InventoryBuilder instance = this;
     private ItemStack placeholder, border = null;
 
     /**
@@ -31,8 +29,16 @@ public class InventoryBuilder {
      * @param size Size of the inventory
      */
     public InventoryBuilder(String name, int size) {
-        this.name = TextParser.parseHexForChat(name);
-        this.size = size;
+        this.inventory = Bukkit.createInventory(null, size, TextParser.parseHexAndCodesForChat(name));
+    }
+
+    /**
+     *
+     * @param name Name of the inventory
+     * @param inventoryType Type of the inventory
+     */
+    public InventoryBuilder(String name, CustomInventoryType inventoryType) {
+        this.inventory = Bukkit.createInventory(null, InventoryType.valueOf(inventoryType.name()), TextParser.parseHexAndCodesForChat(name));
     }
 
     /**
@@ -42,7 +48,7 @@ public class InventoryBuilder {
      * @return Instance of the current state of the builder
      */
     public InventoryBuilder addItem(ItemStack is, int position) {
-        this.addItem(is,position,null);
+        this.addItem(is, position,null);
         return this;
     }
 
@@ -74,11 +80,9 @@ public class InventoryBuilder {
      * @return Instance of the current state of the builder
      */
     public InventoryBuilder addOption(Option option) {
-
         if(options.contains(option)) return this;
 
         options.add(option);
-
         return this;
     }
 
@@ -110,11 +114,14 @@ public class InventoryBuilder {
      */
     public Inventory build() {
 
-        Inventory inv = Bukkit.createInventory(null, getSize(), getName());
+        getInventory().getViewers().add(new ViewerHandler(this));
 
-        inv.getViewers().add(new ViewerHandler(instance));
+        getInventory().getViewers().add(new ViewerHandler((event, isPlayerInventory) -> {
 
-        inv.getViewers().add(new ViewerHandler((event, isPlayerInventory) -> {
+            if(event instanceof InventoryDragEvent e && !isPlayerInventory && !getOptions().contains(Option.PUT_ITEM)) {
+                e.setCancelled(true);
+                return;
+            }
 
             if(event instanceof InventoryClickEvent e) {
 
@@ -138,58 +145,56 @@ public class InventoryBuilder {
                 if(!getOptions().contains(Option.PUT_ITEM) && (action.contains("SWAP") || action.contains("HOTBAR") || action.contains("MOVE") || action.contains("PLACE")))
                     e.setCancelled(true);
 
-            } else if(event instanceof InventoryDragEvent e && !isPlayerInventory && !getOptions().contains(Option.PUT_ITEM)) {
-                e.setCancelled(true);
             }
 
 
         }));
 
-        items.forEach(inventoryItem -> inv.setItem(inventoryItem.getSlot(), inventoryItem.getItem()));
+        items.forEach(inventoryItem -> getInventory().setItem(inventoryItem.getSlot(), inventoryItem.getItem()));
 
-         if(this.border != null) {
+         if(this.border != null && getInventory().getType() == InventoryType.CHEST) {
              //top
              for(int i = 0; i < 9; i++) {
-                 inv.setItem(i, this.border);
+                 getInventory().setItem(i, this.border);
                  items.add(new InventoryItem(border, i));
              }
 
              //down
-             for(int i = inv.getSize() - 9; i < inv.getSize(); i++) {
-                 inv.setItem(i, this.border);
+             for(int i = getInventory().getSize() - 9; i < getInventory().getSize(); i++) {
+                 getInventory().setItem(i, this.border);
                  items.add(new InventoryItem(border, i));
              }
 
              //left 0, 9, 18, 27, 36...
-             for(int i = 0; i < getSize(); i++) {
+             for(int i = 0; i < getInventory().getSize(); i++) {
 
                  if(i % 9 != 0) continue;
 
-                 inv.setItem(i, border);
+                 getInventory().setItem(i, border);
                  items.add(new InventoryItem(border, i));
              }
 
              //right 8, 17, 26, 35, 44..
-             for(int i = 1; i < getSize(); i++) {
+             for(int i = 1; i < getInventory().getSize(); i++) {
 
                  if(i % 9 != 0) continue;
 
-                 inv.setItem(i-1, border);
+                 getInventory().setItem(i-1, border);
                  items.add(new InventoryItem(border, i-1));
              }
 
          }
 
         if(this.placeholder != null) {
-            for(int i = 0; i < inv.getSize(); i++) {
-                if (inv.getItem(i) == null) {
-                    inv.setItem(i, this.placeholder);
+            for(int i = 0; i < getInventory().getSize(); i++) {
+                if (getInventory().getItem(i) == null) {
+                    getInventory().setItem(i, this.placeholder);
                     items.add(new InventoryItem(placeholder, i));
                 }
             }
         }
 
-        return inv;
+        return getInventory();
     }
 
     /**
@@ -199,6 +204,10 @@ public class InventoryBuilder {
      */
     public InventoryItem getItemAt(ItemStack item) {
         return items.stream().filter(inventoryItem -> inventoryItem.getItem().equals(item)).findAny().orElse(null);
+    }
+
+    public int getSize() {
+        return getInventory().getSize();
     }
 
     public enum Option {
