@@ -21,6 +21,22 @@ EventUtils.registerEvent(AsyncPlayerChatEvent.class, e -> {
 });
 ```
 
+### CommandSystem
+
+The `CommandSystem` is a simple way to register commands without needing to create multiple methods
+
+**Example**:
+
+```java
+// Registering my custom command with the name "MyCommand" and consuming the event
+CommandUtils.registerCommand("MyCommand", e -> {
+  // Getting the args by using an util method which will return a String[] of arguments
+  String[] args = CommandUtils.getArguments("MyCommand", e.getMessage());
+
+  // Sending the player a message that he used the command and also providing the length / how many arguments were provided
+  e.getPlayer().sendMessage("Wow you used an custom command! You also provided so many arguments: " + args.length);
+});
+```
 
 ### Config
 
@@ -116,9 +132,30 @@ Inventory inventoryBuilder = new InventoryBuilder("Title of the &cGUI", 27)
   .border(new ItemStack(Material.BARRIER))
   // Adding a placeholder which will be put at every empty slot in the inventory
   .placeholder(new ItemStack(Material.PLAYER_HEAD))
-  // Allowing users to put in items (Taking / Putting is not allowed by default)
+  // Allowing users to put in items (Taking / Putting items is not allowed by default)
   .addOption(InventoryBuilder.Option.PUT_ITEM)
-  // Building the gui to receive an inventory
+  // Building the gui to receive an inventory which we could open to a player
+  .build();
+```
+
+**Example for custom Inventory-Type:**
+
+```java
+// Creating a new InventoryBuilder with the gui title "Title of the &cGUI" and my custom inventory type BREWING (which will result in a brewing stand inventory)
+Inventory inventoryBuilder = new InventoryBuilder("Title of the &cGUI", CustomInventoryType.BREWING)
+  // Adding an item stack at the position 0 with an event we handle (Click / Drag etc.)
+  .addItem(new ItemStack(Material.GLASS), 0, e -> {
+    Bukkit.broadcastMessage("Clicked on glass!");
+  })
+  // Adding an InventoryItem at the position 1 with an event we handle (Click / Drag etc.)
+  .addItem(new InventoryItem(new ItemStack(Material.CLOCK), 1, e -> {
+    Bukkit.broadcastMessage("You clicked on my special InventoryItem");
+  }))
+  // Adding a placeholder which will be put at every empty slot in the inventory
+  .placeholder(new ItemStack(Material.PLAYER_HEAD))
+  // Allowing users to put in items (Taking / Putting items is not allowed by default)
+  .addOption(InventoryBuilder.Option.PUT_ITEM)
+  // Building the gui to receive an inventory which we could open to a player
   .build();
 ```
 
