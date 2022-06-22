@@ -1,5 +1,6 @@
 package dev.dontblameme.utilsapi.main;
 
+import dev.dontblameme.utilsapi.events.command.CommandEvent;
 import dev.dontblameme.utilsapi.events.command.CommandUtils;
 import dev.dontblameme.utilsapi.events.event.EventUtils;
 import dev.dontblameme.utilsapi.inventorybuilder.InventoryListener;
@@ -28,8 +29,10 @@ public class Main extends JavaPlugin {
 
             if(!CommandUtils.getCommands().containsKey(command)) return;
 
+            String[] args = e.getMessage().replaceFirst("/" + command, "").trim().split(" ");
+
             e.setCancelled(true);
-            CommandUtils.getCommands().get(command).accept(e);
+            CommandUtils.getCommands().get(command).accept(new CommandEvent(e, args));
         });
     }
 
