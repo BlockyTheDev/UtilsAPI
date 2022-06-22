@@ -79,7 +79,7 @@ The `TextParser` is a simple way to replace every hex code and/or color code in 
 
 ```java
 // Replaces every hex code and color code for a string  
-TextParser.parseHexAndCodesForChat("&cThis would be red and #00ff00");
+TextParser.parseHexAndCodesForChat("&cThis would be red and #00ff00Green");
 
 // Replaces every color code in a message starting with a special predefined character
 TextParser.parseColorCodes("%aThis is green", '%');
