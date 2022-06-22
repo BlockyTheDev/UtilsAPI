@@ -38,10 +38,70 @@ CommandUtils.registerCommand("MyCommand", e -> {
 });
 ```
 
+### ScoreboardBuilder
+
+The `ScoreboardBuilder` is a simple way to create scoreboards without needing to mess around with the spigot api
+
+```java
+// Creating a ScoreboardBuilder with the title My Scoreboard
+ScoreboardBuilder sb = new ScoreboardBuilder("My Scoreboard");
+
+// Adding a line without any color
+sb.addLine("Line 1", 0);
+// Adding a line with a red color code
+sb.addLine("&cRed Line 2", 1);
+// Adding a line with a green hex color
+sb.addLine("#00ff00Line 3 in green", 2);
+// Adding a player who can see this scoreboard
+sb.addPlayer(Bukkit.getPlayer("DrachenfeuerHD"));
+// Starting the scoreboard and updating it every 20 ticks (1 second)
+sb.start(20);
+
+// Scheduling a delayed task to execute after 200 ticks
+Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+  // Updating line 0 to now display the text Now the line is updated
+  sb.updateLine("Now the line is updated", 0);
+}, 200);
+
+// Destroying the scoreboard which will result into the scoreboard being removed from every player
+sb.destroy();
+```
+
+### MultiScoreboard
+
+The `MultiScoreboard` provides a simple way to cycle across different scoreboards and display this to players
+
+```java
+// Creating a ScoreboardBuilder with the title My Scoreboard
+ScoreboardBuilder sb = new ScoreboardBuilder("My Scoreboard");
+
+// Adding a line without any color
+sb.addLine("Line 1", 0);
+
+// Creating a ScoreboardBuilder with the title Another Scoreboard
+ScoreboardBuilder anotherSb = new ScoreboardBuilder("Another Scoreboard");
+
+// Adding a line without any color
+sb.addLine("Another Line", 0);
+
+// Creating a multi scoreboard
+MultiScoreboard msb = new MultiScoreboard();
+
+// Adding a player who will see the cycling scoreboards
+msb.addPlayer(Bukkit.getPlayer("DrachenfeuerHD"));
+// Adding the scoreboards to the multi scoreboard
+msb.addScoreboards(sb, anotherSb);
+// Starting the multi scoreboard with a delay of 1 second between scoreboard changes
+msb.start(20);
+
+// Stopping and destroying every scoreboard in the multi scoreboard
+msb.stop(true);
+```
+
 ### Config
 
 The `ConfigUtils` is a simple way to create your custom config without needing to code a lot
-You need to provide the config.yml (or your choosen name) in the src folder of your project (prefilled with your default values).
+You need to provide the config.yml (or your choosen name) in the src folder of your project (prefilled with your default values)
 When you export your plugin you need to add your config.yml to your export. (You need to export it along with your other files)
 
 **Example**:
