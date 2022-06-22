@@ -31,10 +31,10 @@ The `CommandSystem` is a simple way to register commands without needing to crea
 // Registering my custom command with the name "MyCommand" and consuming the event
 CommandUtils.registerCommand("MyCommand", e -> {
   // Getting the args by using an util method which will return a String[] of arguments
-  String[] args = CommandUtils.getArguments("MyCommand", e.getMessage());
+  String[] args = e.getArgs();
 
   // Sending the player a message that he used the command and also providing the length / how many arguments were provided
-  e.getPlayer().sendMessage("Wow you used an custom command! You also provided so many arguments: " + args.length);
+  e.getEvent().getPlayer().sendMessage("Wow you used an custom command! You also provided so many arguments: " + args.length);
 });
 ```
 
