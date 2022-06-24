@@ -144,9 +144,9 @@ public class ScoreboardBuilder {
     /**
      *
      * @return Instance of this
-     * @apiNote Shows the scoreboard to every player provided, not updating / refreshing. If you want dynamic updates use the start() method
+     * @apiNote Sends the scoreboard to every player provided, not updating / refreshing. If you want dynamic updates use the start() method
      */
-    public ScoreboardBuilder showScoreboard() {
+    public ScoreboardBuilder send() {
         if(scoreboard == null) return this;
 
         for(Player player : players)

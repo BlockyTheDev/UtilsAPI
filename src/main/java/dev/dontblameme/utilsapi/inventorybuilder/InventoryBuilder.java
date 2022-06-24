@@ -21,7 +21,8 @@ public class InventoryBuilder {
     private final List<InventoryItem> items = new ArrayList<>();
     @Getter
     private final List<Option> options = new ArrayList<>();
-    private ItemStack placeholder, border = null;
+    private ItemStack placeholder = null;
+    private ItemStack border = null;
 
     /**
      *
@@ -200,10 +201,11 @@ public class InventoryBuilder {
     /**
      *
      * @param item ItemStack which will be searched for
+     * @param itemSlot Slot of the ItemStack in the inventory
      * @return InventoryItem of the itemstack found in the inventory
      */
-    public InventoryItem getItemAt(ItemStack item) {
-        return items.stream().filter(inventoryItem -> inventoryItem.getItem().equals(item)).findAny().orElse(null);
+    public InventoryItem getItemAt(ItemStack item, int itemSlot) {
+        return items.stream().filter(inventoryItem -> item.hashCode() == inventoryItem.getItem().hashCode() && itemSlot == inventoryItem.getSlot()).findFirst().orElse(null);
     }
 
     public int getSize() {
