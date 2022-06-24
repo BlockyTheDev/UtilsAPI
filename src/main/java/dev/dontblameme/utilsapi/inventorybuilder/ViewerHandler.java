@@ -23,6 +23,7 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ViewerHandler implements HumanEntity {
 
@@ -37,7 +38,7 @@ public class ViewerHandler implements HumanEntity {
         this.handler = handler;
     }
 
-    public BiConsumer<Event, Boolean> getConsumer() {
+    public BiConsumer<Event, Boolean> getHandler() {
         return handler;
     }
 

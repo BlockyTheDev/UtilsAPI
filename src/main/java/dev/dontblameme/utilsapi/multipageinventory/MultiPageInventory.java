@@ -1,6 +1,7 @@
 package dev.dontblameme.utilsapi.multipageinventory;
 
 import dev.dontblameme.utilsapi.inventorybuilder.InventoryBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -17,11 +18,12 @@ public class MultiPageInventory {
 
     /**
      *
-     * @param inventory InventoryBuilder which should be added
+     * @param inventories InventoryBuilder which should be added
      * @return Instance of the current state of the builder
      */
-    public MultiPageInventory addPage(InventoryBuilder inventory) {
-        pages.put(pages.size() + 1, inventory);
+    public MultiPageInventory addPages(InventoryBuilder... inventories) {
+        for(InventoryBuilder inv : inventories)
+            pages.put(pages.size() + 1, inv);
         return this;
     }
 
@@ -62,12 +64,12 @@ public class MultiPageInventory {
      * @return Inventory of the page ready to be used
      */
     public Inventory getInventory(int pageNumber) {
-        if(pages.get(pageNumber) == null) throw new IllegalStateException("Page 1 must exist in " + getClass().getSimpleName());
+        if(pages.get(pageNumber) == null) throw new IllegalStateException("Page " + pageNumber + " does not exist in " + getClass().getSimpleName());
 
         if(!globalButtons.isEmpty())
             pages.forEach((key, value) -> globalButtons.forEach(btn -> {
 
-                MultiPageButton button = btn.clone();
+                MultiPageButton button = new MultiPageButton(btn);
 
                 button.setPageToDisplay(key);
 
@@ -114,6 +116,8 @@ public class MultiPageInventory {
      * @param e The actual event which happened
      */
     private void handleClick(MultiPageButton button, InventoryClickEvent e) {
+
+        if(button.getInventorySlot() != e.getSlot()) return;
 
         if(button.getPageToRedirect() > 0) {
 

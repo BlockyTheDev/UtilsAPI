@@ -35,5 +35,4 @@ public class Main extends JavaPlugin {
             CommandUtils.getCommands().get(command).accept(new CommandEvent(e, args));
         });
     }
-
 }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
-public class MultiPageButton implements Cloneable {
+public class MultiPageButton {
 
     @Getter
     private final ItemStack item;
@@ -16,22 +16,24 @@ public class MultiPageButton implements Cloneable {
     @Getter
     private final int pageToRedirect;
     @Getter
-    private final ButtonType buttonType;
+    @Setter
+    private ButtonType buttonType;
     @Getter
     @Setter
     private boolean shouldStayWhenInvalid = false;
 
     /**
      *
-     * @return Clone of provided button
+     * @param source Source for clone
+     * @apiNote Only used for cloning an existing instance of this class
      */
-    @Override
-    public MultiPageButton clone() {
-        try {
-            return (MultiPageButton) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
+    public MultiPageButton(MultiPageButton source) {
+        item = source.getItem();
+        inventorySlot = source.getInventorySlot();
+        pageToDisplay = source.getPageToDisplay();
+        pageToRedirect = source.getPageToRedirect();
+        buttonType = source.getButtonType();
+        shouldStayWhenInvalid = source.isShouldStayWhenInvalid();
     }
 
     /**
