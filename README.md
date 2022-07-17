@@ -1,7 +1,7 @@
 # UtilsAPI
 UtilsAPI is a powerful java plugin api. It provides many features. examples: simple event registration, multi page inventories, easy scoreboards, configs and more
 
-It works on minecraft version 1.18.2 and requires java 18
+The API works on minecraft 1.18.2 and it requires java 18 to be installed on the server
 
 **You need to add**
 `api-version: 1.18`
