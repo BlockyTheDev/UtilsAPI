@@ -3,8 +3,10 @@ UtilsAPI is a powerful java plugin api. It provides many features. examples: sim
 
 It works on minecraft version 1.18.2 and requires java 18
 
-**You need to add api-version: 1.18 to your plugin.yml**
-**You maybe want to add depend: [UtilsAPI] to your plugin.yml**
+**You need to add**
+`api-version: 1.18`
+`depend: [UtilsAPI]`
+**to your plugin.yml for the api to work**
 
 ### EventSystem
 
