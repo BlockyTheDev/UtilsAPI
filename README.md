@@ -103,7 +103,7 @@ ScoreboardBuilder sb = new ScoreboardBuilder("My Scoreboard");
 
 ### Config
 
-The `ConfigUtils` is a simple way to create your custom config without needing to code a lot
+The `CustomConfig` is a simple way to create your custom config without needing to code a lot
 You need to provide the config.yml (or your choosen name) in the src folder of your project (prefilled with your default values)
 When you export your plugin you need to add your config.yml to your export. (You need to export it along with your other files)
 
@@ -112,7 +112,7 @@ When you export your plugin you need to add your config.yml to your export. (You
 ```java
 // this > Instance of your main class
 // "config.yml" > Name and file extension of your config file
-ConfigUtils exampleConfig = new ConfigUtils(this, "config.yml");
+CustomConfig exampleConfig = new CustomConfig(this, "config.yml");
 
 // Getting a value by the key "test"
         String value = exampleConfig.getValue("test");
