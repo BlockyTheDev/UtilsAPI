@@ -1,9 +1,10 @@
 package dev.dontblameme.utilsapi.inventorybuilder;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -62,9 +63,15 @@ public class InventoryListener implements Listener {
             InventoryBuilder builder = entity.getBuilder();
             ItemStack item = e.getCurrentItem();
 
-            if(builder.getItemAt(item, e.getSlot()) == null || builder.getItemAt(item, e.getSlot()).getHandler() == null) return;
 
-            if(Arrays.asList(builder.build().getContents()).contains(item) && Objects.equals(e.getClickedInventory(), top))
+            if(builder.getInventory() == null || !Arrays.asList(builder.getInventory().getContents()).contains(item) || !Objects.equals(e.getClickedInventory(), top)) return;
+
+            if(builder.getAnimatedItemAt(item, e.getSlot()) != null) {
+                builder.getAnimatedItemAt(item, e.getSlot()).getHandler().accept(e);
+                return;
+            }
+
+            if(builder.getItemAt(item, e.getSlot()) != null && builder.getItemAt(item, e.getSlot()).getHandler() != null)
                 builder.getItemAt(item, e.getSlot()).getHandler().accept(e);
 
         }

@@ -1,12 +1,10 @@
 package dev.dontblameme.utilsapi.inventorybuilder;
 
+import dev.dontblameme.utilsapi.main.Main;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,10 +17,12 @@ public class InventoryBuilder {
     @Getter
     private final Inventory inventory;
     private final List<InventoryItem> items = new ArrayList<>();
+    private final List<AnimatedInventoryItem> animatedItems = new ArrayList<>();
     @Getter
     private final List<Option> options = new ArrayList<>();
     private ItemStack placeholder = null;
     private ItemStack border = null;
+    private boolean taskRunning = false;
 
     /**
      *
@@ -72,6 +72,16 @@ public class InventoryBuilder {
      */
     public InventoryBuilder addItem(InventoryItem item) {
         this.items.add(item);
+        return this;
+    }
+
+    /**
+     *
+     * @param item AnimatedInventoryItem which should be added
+     * @return Instance of the current state of the builder
+     */
+    public InventoryBuilder addItem(AnimatedInventoryItem item) {
+        this.animatedItems.add(item);
         return this;
     }
 
@@ -195,17 +205,62 @@ public class InventoryBuilder {
             }
         }
 
+        if(animatedItems.isEmpty()) return getInventory();
+
+        for(AnimatedInventoryItem item : animatedItems) {
+            if(items.stream().anyMatch(normalItem -> normalItem.getSlot() == item.getSlot())) continue;
+
+            ItemStack nextItem = item.getNextItem();
+
+            getInventory().setItem(item.getSlot(), nextItem);
+
+            startTask(item);
+        }
         return getInventory();
+    }
+
+    private void startTask(AnimatedInventoryItem item) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+            if(getInventory() == null || getInventory().getViewers().size() < 3) {
+                if(taskRunning)
+                    taskRunning = false;
+                return;
+            }
+
+            if(!taskRunning) taskRunning = true;
+
+            ItemStack entry = item.getNextItem();
+
+            if(entry == null)
+                startTask(item);
+
+            getInventory().setItem(item.getSlot(), entry);
+            startTask(item);
+        }, item.getDelay());
     }
 
     /**
      *
      * @param item ItemStack which will be searched for
      * @param itemSlot Slot of the ItemStack in the inventory
-     * @return InventoryItem of the itemstack found in the inventory
+     * @return InventoryItem of the ItemStack found in the inventory
      */
     public InventoryItem getItemAt(ItemStack item, int itemSlot) {
         return items.stream().filter(inventoryItem -> item.hashCode() == inventoryItem.getItem().hashCode() && itemSlot == inventoryItem.getSlot()).findFirst().orElse(null);
+    }
+
+    /**
+     *
+     * @param item ItemStack which will be searched for
+     * @param itemSlot Slot of the ItemStack in the inventory
+     * @return AnimatedInventoryItem of the ItemStack found in the inventory
+     */
+    public AnimatedInventoryItem getAnimatedItemAt(ItemStack item, int itemSlot) {
+        for(AnimatedInventoryItem animatedInventoryItem : animatedItems)
+            if(animatedInventoryItem.getItems().stream().filter(invItem -> invItem.hashCode() == item.hashCode()).filter(invItem -> animatedInventoryItem.getSlot() == itemSlot).findFirst().orElse(null) != null)
+                return animatedInventoryItem;
+
+        return null;
     }
 
     public int getSize() {

@@ -6,13 +6,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 
+@Getter
 public class InventoryItem {
 
-    @Getter
     private final ItemStack item;
-    @Getter
     private final int slot;
-    @Getter
     private final Consumer<InventoryClickEvent> handler;
 
     /**

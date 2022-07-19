@@ -1,7 +1,6 @@
 package dev.dontblameme.utilsapi.multipageinventory;
 
 import dev.dontblameme.utilsapi.inventorybuilder.InventoryBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;

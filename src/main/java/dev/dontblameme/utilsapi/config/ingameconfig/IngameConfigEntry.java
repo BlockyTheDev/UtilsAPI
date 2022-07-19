@@ -74,7 +74,8 @@ public class IngameConfigEntry {
     public ItemStack getItem() {
         ItemBuilder builder = new ItemBuilder(material).name(itemName);
 
-        builder.addLore("&7Section: &e" + section);
+        if(!section.isEmpty())
+            builder.addLore("&7Section: &e" + section);
         builder.addLore("&7Key: &e" + key);
         builder.addLore("&7Value: &e" + value);
 
