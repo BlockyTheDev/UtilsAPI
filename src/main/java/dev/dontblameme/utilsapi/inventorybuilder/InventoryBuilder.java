@@ -121,6 +121,20 @@ public class InventoryBuilder {
 
     /**
      *
+     * @param allowClose Should the player be able to close this inventory
+     * @return Instance of the current state of the builder
+     */
+    public InventoryBuilder close(boolean allowClose) {
+        if(allowClose) {
+            Main.removeNoCloseInventory(this);
+        } else {
+            Main.addNoCloseInventory(this);
+        }
+        return this;
+    }
+
+    /**
+     *
      * @return The inventory fully builded and ready to use
      */
     public Inventory build() {

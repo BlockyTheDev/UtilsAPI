@@ -6,10 +6,13 @@ import dev.dontblameme.utilsapi.events.command.CommandEvent;
 import dev.dontblameme.utilsapi.events.command.CommandUtils;
 import dev.dontblameme.utilsapi.events.command.CustomCommand;
 import dev.dontblameme.utilsapi.events.event.EventUtils;
+import dev.dontblameme.utilsapi.inventorybuilder.InventoryBuilder;
 import dev.dontblameme.utilsapi.inventorybuilder.InventoryListener;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,6 +30,7 @@ public class Main extends JavaPlugin {
     private static Main instance;
     @Getter
     private static HashMap<Player, IngameConfigEntry> entriesForChat = new HashMap<>();
+    private static ArrayList<InventoryBuilder> inventoriesNoClose = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -37,6 +42,7 @@ public class Main extends JavaPlugin {
 
         listenCustomCommands();
         listenChatInputIngameConfig();
+        listenNoCloseInventory();
     }
 
     private void checkVersion() {
@@ -66,6 +72,26 @@ public class Main extends JavaPlugin {
 
     public static Main getInstance() {
         return instance;
+    }
+
+    public static void addNoCloseInventory(InventoryBuilder inventory) {
+        inventoriesNoClose.add(inventory);
+    }
+
+    public static void removeNoCloseInventory(InventoryBuilder inventory) {
+        inventoriesNoClose.remove(inventory);
+    }
+
+    private void listenNoCloseInventory() {
+        EventUtils.registerEvent(InventoryCloseEvent.class, e -> {
+            for(InventoryBuilder ib : inventoriesNoClose) {
+                if(ib.getInventory().equals(e.getInventory()) && ib.getInventory().hashCode() == e.getInventory().hashCode()) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
+                            e.getPlayer().openInventory(ib.getInventory()), 0L);
+                    break;
+                }
+            }
+        });
     }
 
     private void listenCustomCommands() {
