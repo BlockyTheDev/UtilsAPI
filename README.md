@@ -336,4 +336,25 @@ Inventory multiPageInventory = new MultiPageInventory()
 // Now we could open this inventory to a player and the api would handle everything else
 ```
 
+### Animated Inventory Item
+
+```java
+// Creating a new AnimatedInventoryItem on the GUI slot 0 and accepting the event (InventoryClickEvent)
+AnimatedInventoryItem animatedInventoryItem = new AnimatedInventoryItem(0, e -> {
+        Bukkit.broadcastMessage("You clicked my Animated Item!");
+    }, 
+    // Setting the delay between item-changes to 20 ticks (1 Second)
+    20,
+    // Adding our first item
+    new ItemBuilder(Material.DIAMOND_SWORD).name("&cStrong Sword").addLore("&aThis is changing").build(),
+    // Adding another item
+    new ItemBuilder(Material.DIAMOND_SWORD).name("&cStrong Sword").addLore("&6Now it is this lore").build(),
+    // Adding one more item
+    new ItemBuilder(Material.DIAMOND_SWORD).name("&cStrong Sword").addLore("&cAnd another one!").build()
+    );
+
+    // Adding our animated item to an example inventory builder to use it
+inventoryBuilder.addItem(animatedInventoryItem);
+```
+
 Copyright https://DontBlameMe.dev
