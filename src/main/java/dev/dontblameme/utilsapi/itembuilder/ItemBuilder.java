@@ -18,7 +18,6 @@ public class ItemBuilder {
 
     private Material material;
     private int amount = 1;
-    private short durability = 0;
     private String name;
     private final List<String> lores = new ArrayList<>();
     private final List<ItemFlag> flags = new ArrayList<>();
@@ -52,20 +51,10 @@ public class ItemBuilder {
     public ItemBuilder name(String name) {
         if(name == null || name.isEmpty()) {
             this.name = "§r";
-        } else {
-            this.name = TextParser.parseHexAndCodes(name);
+            return this;
         }
-        return this;
-    }
 
-    /**
-     *
-     * @param durability The durability which should be used for the item
-     * @return Instance of the current state of the builder
-     * @apiNote The integer will be casted to a short
-     */
-    public ItemBuilder durability(int durability) {
-        this.durability = (short) durability;
+        this.name = TextParser.parseHexAndCodes(name);
         return this;
     }
 
@@ -78,9 +67,10 @@ public class ItemBuilder {
     public ItemBuilder addLore(String lore) {
         if(lore == null || lore.isEmpty()) {
             lores.add("§a");
-        } else {
-            lores.add(TextParser.parseHexAndCodes(lore));
+            return this;
         }
+
+        lores.add(TextParser.parseHexAndCodes(lore));
         return this;
     }
 
@@ -131,25 +121,23 @@ public class ItemBuilder {
      * @return Ready to use itemstack with every custom value set
      */
     public ItemStack build() {
-        ItemStack item = new ItemStack(material, amount, durability);
+        ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
+
+        if(meta == null)
+            throw new IllegalStateException("ItemMeta is null, this should not happen");
 
         if(name != null)
             meta.setDisplayName(TextParser.parseHexAndCodes(name));
 
-        if(!lores.isEmpty()) {
-            List<String> loresParsed = new ArrayList<>();
-
-            lores.forEach(l -> loresParsed.add(TextParser.parseHexAndCodes(l)));
-
-            meta.setLore(loresParsed);
-        }
+        if(!lores.isEmpty())
+            meta.setLore(lores.stream().map(TextParser::parseHexAndCodes).toList());
 
         if(!flags.isEmpty())
             flags.forEach(meta::addItemFlags);
 
         if(!enchantments.isEmpty())
-            item.addUnsafeEnchantments(enchantments);
+            enchantments.forEach((enchantment, level) -> meta.addEnchant(enchantment, level, true));
 
         if(skullOwner != null)
             ((SkullMeta) meta).setOwningPlayer(Bukkit.getOfflinePlayer(skullOwner));
