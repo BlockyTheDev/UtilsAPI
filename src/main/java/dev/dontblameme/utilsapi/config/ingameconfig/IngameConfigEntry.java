@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Getter
@@ -15,7 +16,7 @@ public class IngameConfigEntry {
 
     private String itemName;
     private Material material;
-    private final String section;
+    private final List<String> sections = new ArrayList<>();
     private String key;
     private String value;
     private ArrayList<String> lores = new ArrayList<>();
@@ -27,22 +28,15 @@ public class IngameConfigEntry {
      *
      * @param itemName Name for the ItemStack
      * @param material Material of the ItemStack
-     * @param section Section of the entry
      * @param key Key of the entry
      * @param value Value of the entry
      * @param setValueTitle Title for the set value GUI
      * @param setValueMessage Message for the set value GUI, replacing %n% with the key of the entry
      * @param consumer Consumer for the set value GUI
+     * @param section Section of the entry
      */
-    public IngameConfigEntry(String itemName, Material material, String section, String key, String value, String setValueTitle, String setValueMessage, Consumer<IngameConfigUpdateEvent> consumer) {
-        this.itemName = itemName;
-        this.material = material;
-        this.section = section;
-        this.key = key;
-        this.value = value;
-        this.setValueTitle = setValueTitle;
-        this.setValueMessage = setValueMessage;
-        this.consumer = consumer;
+    public IngameConfigEntry(String itemName, Material material, String key, String value, String setValueTitle, String setValueMessage, Consumer<IngameConfigUpdateEvent> consumer, String... section) {
+        this(itemName, material, key, value, setValueTitle, setValueMessage, consumer, List.of(section));
     }
 
     /**
@@ -54,9 +48,17 @@ public class IngameConfigEntry {
      * @param setValueTitle Title for the set value GUI
      * @param setValueMessage Message for the set value GUI, replacing %n% with the key of the entry
      * @param consumer Consumer for the set value GUI
+     * @param section Section of the entry
      */
-    public IngameConfigEntry(String itemName, Material material, String key, String value, String setValueTitle, String setValueMessage, Consumer<IngameConfigUpdateEvent> consumer) {
-        this(itemName, material, "", key, value, setValueTitle, setValueMessage, consumer);
+    public IngameConfigEntry(String itemName, Material material, String key, String value, String setValueTitle, String setValueMessage, Consumer<IngameConfigUpdateEvent> consumer, List<String> section) {
+        this.itemName = itemName;
+        this.material = material;
+        this.sections.addAll(section);
+        this.key = key;
+        this.value = value;
+        this.setValueTitle = setValueTitle;
+        this.setValueMessage = setValueMessage;
+        this.consumer = consumer;
     }
 
     /**
@@ -74,8 +76,10 @@ public class IngameConfigEntry {
     public ItemStack getItem() {
         ItemBuilder builder = new ItemBuilder(material).name(itemName);
 
-        if(!section.isEmpty())
-            builder.addLore("&7Section: &e" + section);
+        if(!sections.isEmpty())
+            for(int i=0;i<sections.size();i++)
+                builder.addLore("&7Sub-Section " + (i + 1) + ": &e" + sections.get(i));
+
         builder.addLore("&7Key: &e" + key);
         builder.addLore("&7Value: &e" + value);
 

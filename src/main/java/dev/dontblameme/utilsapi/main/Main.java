@@ -34,7 +34,6 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         checkVersion();
 
         instance = this;
@@ -102,7 +101,7 @@ public class Main extends JavaPlugin {
 
             for(CustomCommand c : commands) {
                 if(c.getCommandName().equalsIgnoreCase(command)) {
-                    CommandEvent event = new CommandEvent(e, args);
+                    CommandEvent event = new CommandEvent(e.getPlayer(), e, args);
 
                     e.setCancelled(true);
 
@@ -118,7 +117,6 @@ public class Main extends JavaPlugin {
     }
 
     private void listenChatInputIngameConfig() {
-
         EventUtils.registerEvent(PlayerCommandPreprocessEvent.class, e -> {
             if(entriesForChat.containsKey(e.getPlayer())) {
                 e.setCancelled(true);
@@ -129,6 +127,7 @@ public class Main extends JavaPlugin {
                 entry.setValue(e.getMessage());
                 entriesForChat.remove(e.getPlayer());
                 entry.getConsumer().accept(new IngameConfigUpdateEvent(entry.getKey(), oldValue, e.getMessage(), e.getPlayer()));
+
             }
         });
 

@@ -17,16 +17,15 @@ public class TextParser {
      * @return Message with chat-ready replacement of hex
      */
     public static String parseHex(String message) {
-
         if(message.isEmpty()) throw new IllegalArgumentException("Message may not be null or empty");
 
         Matcher m = hexPattern.matcher(message);
 
         while(m.find()) {
             String s = m.group();
+
             message = message.replace(s, ChatColor.of(Color.decode(s)) + "");
         }
-
         return message;
     }
 

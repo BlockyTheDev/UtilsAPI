@@ -15,7 +15,7 @@ public class MultiScoreboard {
     private int scoreboard;
     private int taskId;
     private boolean shouldPause = false;
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
 
     /**
      *
@@ -53,7 +53,7 @@ public class MultiScoreboard {
      * @param delayBetweenUpdates Delay before changing scoreboard
      * @return Instance of this
      */
-    public MultiScoreboard start(int delayBetweenUpdates) {
+    public MultiScoreboard startSending(int delayBetweenUpdates) {
         taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> {
             if(shouldPause) return;
 
@@ -78,7 +78,7 @@ public class MultiScoreboard {
      * @param shouldDestroyScoreboards Should the added scoreboards be destroyed
      * @return Instance of this
      */
-    public MultiScoreboard stop(boolean shouldDestroyScoreboards) {
+    public MultiScoreboard stopSending(boolean shouldDestroyScoreboards) {
         Bukkit.getScheduler().cancelTask(taskId);
 
         if(shouldDestroyScoreboards) {
@@ -96,7 +96,7 @@ public class MultiScoreboard {
      * @return Instance of this
      * @apiNote Pauses the cycle of scoreboards
      */
-    public MultiScoreboard pause() {
+    public MultiScoreboard pauseSending() {
         shouldPause = true;
         return this;
     }
@@ -106,7 +106,7 @@ public class MultiScoreboard {
      * @return Instance of this
      * @apiNote Resumes the cycle of scoreboards
      */
-    public MultiScoreboard unpause() {
+    public MultiScoreboard unPauseSending() {
         shouldPause = false;
         return this;
     }

@@ -42,7 +42,6 @@ public class MultiPageInventory {
      * @return Instance of the current state of the builder
      */
     public MultiPageInventory button(MultiPageButton button) {
-
         if(button.getPageToDisplay() < 1) throw new IllegalArgumentException("Invalid MultiPageButton provided: Button has a page less than 1 (Provide Page as argument for non-global buttons)");
 
         pages.get(button.getPageToDisplay()).addItem(button.getItem(), button.getInventorySlot(), e -> handleClick(button, e));
@@ -67,7 +66,6 @@ public class MultiPageInventory {
 
         if(!globalButtons.isEmpty())
             pages.forEach((key, value) -> globalButtons.forEach(btn -> {
-
                 MultiPageButton button = new MultiPageButton(btn);
 
                 button.setPageToDisplay(key);
@@ -115,7 +113,6 @@ public class MultiPageInventory {
      * @param e The actual event which happened
      */
     private void handleClick(MultiPageButton button, InventoryClickEvent e) {
-
         if(button.getInventorySlot() != e.getSlot()) return;
 
         if(button.getPageToRedirect() > 0) {

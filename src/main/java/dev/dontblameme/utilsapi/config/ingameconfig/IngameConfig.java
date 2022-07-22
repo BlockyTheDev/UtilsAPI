@@ -11,12 +11,16 @@ import dev.dontblameme.utilsapi.multipageinventory.MultiPageButton;
 import dev.dontblameme.utilsapi.multipageinventory.MultiPageInventory;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class IngameConfig {
 
@@ -84,34 +88,37 @@ public class IngameConfig {
     }
 
     private void syncConfig() {
+        Set<String> keys =  config.getKeys(true);
 
-        ArrayList<String> sections = new ArrayList<>();
+        for(String key : keys) {
+            String[] keySplit = key.split("\\.");
 
-        for(String key : config.getKeys(true)) {
-            String value = config.getValue(key);
-            String sectionValue = "";
+            // Not wanted first sub-section
+            if(!String.join(", ", keySplit).contains(",") && config.getValue(String.join(", ", keySplit)).equals("MemorySection[path='" + keySplit[0] + "', root='YamlConfiguration']"))
+                continue;
 
-            if(value.equals("MemorySection[path='" + key + "', root='YamlConfiguration']")) {
-                sections.add(key);
+            // No sub section
+            if(keySplit.length == 1) {
+                ingameConfigEntries.add(new IngameConfigEntry(keySplit[0], Material.WRITABLE_BOOK, keySplit[0], config.getValue(keySplit[0]), TextParser.parseHexAndCodes(editingTitle), TextParser.parseHexAndCodes(editingTitleMessage.replace("%n%", keySplit[0])), e -> {
+                    config.setValue(keySplit[0], e.newValue());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.player().openInventory(getInventory()), 0);
+                }));
                 continue;
             }
 
-            for(String section : sections) {
-                if (key.startsWith(section + ".")) {
-                    sectionValue = section;
-                    key = key.replace(section + ".", "");
-                }
-            }
+            String keyName = keySplit[keySplit.length - 1];
+            String keyPath = key.substring(0, key.length() - keyName.length() - 1);
+            String value = config.getValue(keyName, keyPath);
 
-            String finalKey = key;
-            String finalSectionValue = sectionValue;
-            ingameConfigEntries.add(new IngameConfigEntry(key, Material.WRITABLE_BOOK, sectionValue, key, value, TextParser.parseHexAndCodes(editingTitle), TextParser.parseHexAndCodes(editingTitleMessage.replace("%n%", key)), e -> {
-                if(finalSectionValue.isEmpty()) {
-                    config.setValue(finalKey, e.getNewValue());
-                } else {
-                    config.setValue(finalSectionValue, finalKey, e.getNewValue());
-                }
-            }));
+            // Not wanted
+            if(value.equals("MemorySection[path='" + keyPath + "." + keyName + "', root='YamlConfiguration']"))
+                continue;
+
+            // Valid sub section
+            ingameConfigEntries.add(new IngameConfigEntry(keyName, Material.WRITABLE_BOOK, keyName, value, TextParser.parseHexAndCodes(editingTitle), TextParser.parseHexAndCodes(editingTitleMessage.replace("%n%", keyName)), e -> {
+                config.setValue(keyName, e.newValue(), keyPath.split("\\."));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.player().openInventory(getInventory()), 0);
+            }, keyPath.split("\\.")));
         }
     }
 
@@ -119,7 +126,7 @@ public class IngameConfig {
      * @apiNote Setups the command & makes the gui work
      */
     public void setup() {
-        CommandUtils.registerCommand(new CustomCommand(command, permission, permissionMessage, e -> e.getEvent().getPlayer().openInventory(getInventory())));
+        CommandUtils.registerCommand(new CustomCommand(command, permission, permissionMessage, e -> e.event().getPlayer().openInventory(getInventory())));
     }
 
     /**
@@ -150,7 +157,9 @@ public class IngameConfig {
                     e.getWhoClicked().closeInventory();
                     Main.getEntriesForChat().put(p, entry);
 
-                    new Thread(() -> {
+                    ExecutorService es = Executors.newSingleThreadExecutor();
+
+                    es.execute(() -> {
                         while(Main.getEntriesForChat().containsKey(p)) {
                             p.sendTitle(TextParser.parseHexAndCodes(entry.getSetValueTitle()), TextParser.parseHexAndCodes(entry.getSetValueMessage()), 0, 50, 0);
 
@@ -158,7 +167,9 @@ public class IngameConfig {
                                 Thread.sleep(50);
                             } catch (InterruptedException ex) {ex.printStackTrace();}
                         }
-                    }).start();
+                    });
+
+                    es.submit(() -> Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> p.openInventory(getInventory()), 0L));
                 });
 
                 builder.addItem(item);

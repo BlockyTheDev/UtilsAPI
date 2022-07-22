@@ -1,16 +1,6 @@
 package dev.dontblameme.utilsapi.events.command;
 
-import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-@Getter
-public class CommandEvent {
-
-    private final PlayerCommandPreprocessEvent event;
-    private final String[] args;
-
-    public CommandEvent(PlayerCommandPreprocessEvent e, String[] args) {
-        this.event = e;
-        this.args = args;
-    }
-}
+public record CommandEvent(Player player, PlayerCommandPreprocessEvent event, String[] args) {}

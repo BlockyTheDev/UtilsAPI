@@ -1,5 +1,6 @@
 package dev.dontblameme.utilsapi.config.customconfig;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -7,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -54,58 +56,56 @@ public class CustomConfig {
     /**
      *
      * @param key String to search for
+     * @param section Section of key (not needed)
      * @return Value of key as list
      */
-    public List<?> getList(String key) {
-        return fileConfig.getList(key);
-    }
+    public List<?> getList(String key, String... section) {
+        if(section.length == 0)
+            return fileConfig.getList(key);
 
-    /**
-     *
-     * @param section Section of key
-     * @param key String to search for
-     * @return Value of key as list
-     */
-    public List<?> getList(String section, String key) {
-        return Objects.requireNonNull(fileConfig.getConfigurationSection(section)).getList(key);
+        ConfigurationSection configSection = getConfigSection(section);
+
+        if(configSection == null)
+            return new ArrayList<>();
+
+        return Objects.requireNonNull(configSection.getList(key));
     }
 
     /**
      *
      * @param key String to search for
+     * @param section Section of key (not needed)
      * @return Value of key as object
      */
-    public Object getObject(String key) {
-        return fileConfig.get(key);
+    public Object getObject(String key, String... section) {
+
+        if(section.length == 0)
+            return fileConfig.get(key);
+
+        ConfigurationSection configSection = getConfigSection(section);
+
+        if(configSection == null)
+            return new Object();
+
+        return Objects.requireNonNull(configSection.get(key));
     }
 
     /**
      *
+     * @param key String to search for
      * @param section Section of key
-     * @param key String to search for
-     * @return Value of key as object
-     */
-    public Object getObject(String section, String key) {
-        return Objects.requireNonNull(fileConfig.getConfigurationSection(section)).get(key);
-    }
-
-    /**
-     *
-     * @param key String to search for
      * @return Value of key as string
      */
-    public String getValue(String key) {
-        return fileConfig.getString(key);
-    }
+    public String getValue(String key, String... section) {
+        if(section.length == 0)
+            return fileConfig.getString(key);
 
-    /**
-     *
-     * @param section Section of key
-     * @param key String to search for
-     * @return Value of key as string
-     */
-    public String getValue(String section, String key) {
-        return Objects.requireNonNull(fileConfig.getConfigurationSection(section)).getString(key);
+        ConfigurationSection configSection = getConfigSection(section);
+
+        if(configSection == null)
+            return "";
+
+        return Objects.requireNonNull(configSection.getString(key));
     }
 
     /**
@@ -114,19 +114,22 @@ public class CustomConfig {
      * @param key Identifier
      * @param value Value of identifier
      */
-    public void setValue(String section, String key, Object value) {
-        Objects.requireNonNull(fileConfig.getConfigurationSection(section)).set(key, value);
-        save();
-    }
+    public void setValue(String key, Object value, String... section) {
+        if(section.length == 0) {
+            fileConfig.set(key, value);
+            save();
+            refresh();
+            return;
+        }
 
-    /**
-     *
-     * @param key Identifier
-     * @param value Value of identifier
-     */
-    public void setValue(String key, Object value) {
-        fileConfig.set(key, value);
+        ConfigurationSection configSection = getConfigSection(section);
+
+        if(configSection == null)
+            return;
+
+        configSection.set(key, value);
         save();
+        refresh();
     }
 
     /**
@@ -153,6 +156,22 @@ public class CustomConfig {
             System.out.println("Error while saving config: ");
             e.printStackTrace();
         }
+    }
+
+    private ConfigurationSection getConfigSection(String... section) {
+        if(section.length == 0)
+            throw new IllegalArgumentException("Section cannot be empty!");
+
+        ConfigurationSection configSection = null;
+
+        for(String sectionName : section) {
+            if(configSection == null)
+                configSection = fileConfig.getConfigurationSection(sectionName);
+            else
+                configSection = configSection.getConfigurationSection(sectionName);
+        }
+
+        return configSection;
     }
 
 }

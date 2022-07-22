@@ -121,7 +121,7 @@ public class ScoreboardBuilder {
      * @param delayBetweenUpdates Delay between refreshing the scoreboard
      * @return Instance of this
      */
-    public ScoreboardBuilder start(int delayBetweenUpdates) {
+    public ScoreboardBuilder startSending(int delayBetweenUpdates) {
         if(scoreboard == null) return this;
 
         for(Player player : players)
@@ -146,7 +146,7 @@ public class ScoreboardBuilder {
      * @return Instance of this
      * @apiNote Sends the scoreboard to every player provided, not updating / refreshing. If you want dynamic updates use the start() method
      */
-    public ScoreboardBuilder send() {
+    public ScoreboardBuilder sendOnce() {
         if(scoreboard == null) return this;
 
         for(Player player : players)
