@@ -12,18 +12,23 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.metadata.*;
-import org.bukkit.permissions.*;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.*;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ViewerHandler implements HumanEntity {
 
@@ -388,6 +393,16 @@ public class ViewerHandler implements HumanEntity {
 
     @Override
     public void setStarvationRate(int i) {
+
+    }
+
+    @Override
+    public Location getLastDeathLocation() {
+        return null;
+    }
+
+    @Override
+    public void setLastDeathLocation(Location location) {
 
     }
 
