@@ -35,7 +35,6 @@ public class CustomConfig {
      * @apiNote Refreshes the entire config. This means: Create the file if it is not existing and reload it
      */
     public void refresh() {
-
         configFile = new File(instance.getDataFolder(), configName);
 
         if (!configFile.exists()) {
@@ -50,7 +49,6 @@ public class CustomConfig {
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
