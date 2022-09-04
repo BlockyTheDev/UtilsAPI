@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ItemBuilder {
 
-    private Material material;
+    private final Material material;
     private int amount = 1;
     private String name;
     private final List<String> lores = new ArrayList<>();

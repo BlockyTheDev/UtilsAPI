@@ -7,7 +7,6 @@ import dev.dontblameme.utilsapi.events.command.CommandUtils;
 import dev.dontblameme.utilsapi.events.command.CustomCommand;
 import dev.dontblameme.utilsapi.events.event.EventUtils;
 import dev.dontblameme.utilsapi.inventorybuilder.InventoryBuilder;
-import dev.dontblameme.utilsapi.inventorybuilder.InventoryListener;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -27,7 +26,6 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
-    private static Main instance;
     @Getter
     private static HashMap<Player, IngameConfigEntry> entriesForChat = new HashMap<>();
     private static ArrayList<InventoryBuilder> inventoriesNoClose = new ArrayList<>();
@@ -35,9 +33,6 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         checkVersion();
-
-        instance = this;
-        getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 
         listenCustomCommands();
         listenChatInputIngameConfig();
@@ -69,10 +64,6 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public static Main getInstance() {
-        return instance;
-    }
-
     public static void addNoCloseInventory(InventoryBuilder inventory) {
         inventoriesNoClose.add(inventory);
     }
@@ -85,8 +76,7 @@ public class Main extends JavaPlugin {
         EventUtils.registerEvent(InventoryCloseEvent.class, e -> {
             for(InventoryBuilder ib : inventoriesNoClose) {
                 if(ib.getInventory().equals(e.getInventory()) && ib.getInventory().hashCode() == e.getInventory().hashCode()) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
-                            e.getPlayer().openInventory(ib.getInventory()), 0L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> e.getPlayer().openInventory(ib.getInventory()), 0L);
                     break;
                 }
             }

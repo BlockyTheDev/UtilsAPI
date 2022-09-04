@@ -20,7 +20,6 @@ public class TextParser {
         if(message.isEmpty()) throw new IllegalArgumentException("Message may not be null or empty");
 
         Matcher m = hexPattern.matcher(message);
-
         while(m.find()) {
             String s = m.group();
 

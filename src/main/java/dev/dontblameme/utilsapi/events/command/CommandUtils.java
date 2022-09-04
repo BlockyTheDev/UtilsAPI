@@ -1,6 +1,7 @@
 package dev.dontblameme.utilsapi.events.command;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommandUtils {
 
@@ -22,7 +23,7 @@ public class CommandUtils {
      *
      * @return A list every command
      */
-    public static ArrayList<CustomCommand> getCommands() {
+    public static List<CustomCommand> getCommands() {
         return commands;
     }
 

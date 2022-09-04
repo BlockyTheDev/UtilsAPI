@@ -3,6 +3,7 @@ package dev.dontblameme.utilsapi.scoreboardbuilder;
 import dev.dontblameme.utilsapi.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,18 +51,18 @@ public class MultiScoreboard {
 
     /**
      *
-     * @param delayBetweenUpdates Delay before changing scoreboard
+     * @param delayBetweenUpdates Delay before cycling the scoreboard
      * @return Instance of this
      */
-    public MultiScoreboard startSending(int delayBetweenUpdates) {
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> {
+    public MultiScoreboard startSending(long delayBetweenUpdates) {
+        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(JavaPlugin.getProvidingPlugin(Main.class), () -> {
             if(shouldPause) return;
 
             ScoreboardBuilder sb = getScoreboardBuilder();
 
             for(Player p : players)
                 p.setScoreboard(sb.getScoreboard());
-        }, delayBetweenUpdates, delayBetweenUpdates);
+        }, 0, delayBetweenUpdates);
         return this;
     }
 

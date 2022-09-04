@@ -4,10 +4,13 @@ import dev.dontblameme.utilsapi.main.Main;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
@@ -16,6 +19,7 @@ public class ScoreboardBuilder {
     @Getter
     private Scoreboard scoreboard;
     private final Objective objective;
+    private final HashMap<Integer, Long> lines = new HashMap<>();
     @Getter
     private final ArrayList<Player> players = new ArrayList<>();
     private int teamCount = 0;
@@ -50,16 +54,38 @@ public class ScoreboardBuilder {
         if(teamCount >= 15)
             throw new IllegalStateException("You may not add more than 15 lines to a scoreboard");
 
-        if(content.length() > 64)
-            throw new IllegalStateException("A line may not be longer than 64 chars. Your length: " + content.length());
+        long randomLong = new Random().nextLong();
+        Team team = scoreboard.registerNewTeam(randomLong + "");
 
-        Team team = scoreboard.registerNewTeam(lineNumber + "");
+        if(content.length() > 64 && content.length() <= 120) {
+            String[] split = content.split("(?<=\\G.{64})");
+            String prefix = TextParser.parseHexAndCodes(split[0]);
+            String suffix = TextParser.parseHexAndCodes(split[1]);
 
-        team.setPrefix(content.isEmpty() ? "" : TextParser.parseHexAndCodes(content));
+            team.setPrefix(prefix);
+            team.setSuffix(ChatColor.getLastColors(prefix) + suffix);
+        } else if(content.length() <= 64) {
+            team.setPrefix(content.isEmpty() ? "" : TextParser.parseHexAndCodes(content));
+            team.setSuffix("");
+        } else {
+            throw new IllegalStateException("A line may not be longer than 120 chars. Your length: " + content.length());
+        }
+
         team.addEntry(getPrefix());
         objective.getScore(getPrefix()).setScore(lineNumber);
+        lines.put(lineNumber, randomLong);
 
         teamCount++;
+        return this;
+    }
+
+    /**
+     *
+     * @param displayName The new title of the scoreboard
+     * @return Instance of this
+     */
+    public ScoreboardBuilder setDisplayName(String displayName) {
+        this.objective.setDisplayName(TextParser.parseHexAndCodes(displayName));
         return this;
     }
 
@@ -72,14 +98,24 @@ public class ScoreboardBuilder {
     public ScoreboardBuilder updateLine(String content, int lineNumber) {
         if(scoreboard == null) return this;
 
-        if(content.length() > 64)
-            throw new IllegalStateException("A line may not be longer than 64 chars. Your length: " + content.length());
-
-        Team team = scoreboard.getTeam(lineNumber+"");
+        Team team = scoreboard.getTeam(lines.get(lineNumber) + "");
 
         if(team == null) return this;
 
-        team.setPrefix(content.isEmpty() ? "" : TextParser.parseHexAndCodes(content));
+        if(content.length() > 64 && content.length() <= 120) {
+            String[] split = content.split("(?<=\\G.{64})");
+            String prefix = TextParser.parseHexAndCodes(split[0]);
+            String suffix = TextParser.parseHexAndCodes(split[1]);
+
+            // Todo: suffix not taking hex code, prob. spigot issue with getlastcolors
+            team.setPrefix(prefix);
+            team.setSuffix(ChatColor.getLastColors(prefix) + suffix);
+        } else if(content.length() <= 64) {
+            team.setPrefix(content.isEmpty() ? "" : TextParser.parseHexAndCodes(content));
+            team.setSuffix("");
+        } else {
+            throw new IllegalStateException("A line may not be longer than 120 chars. Your length: " + content.length());
+        }
         return this;
     }
 
@@ -121,13 +157,13 @@ public class ScoreboardBuilder {
      * @param delayBetweenUpdates Delay between refreshing the scoreboard
      * @return Instance of this
      */
-    public ScoreboardBuilder startSending(int delayBetweenUpdates) {
+    public ScoreboardBuilder startSending(long delayBetweenUpdates) {
         if(scoreboard == null) return this;
 
         for(Player player : players)
             player.setScoreboard(scoreboard);
 
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> {
+        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(JavaPlugin.getProvidingPlugin(Main.class), () -> {
 
             if(scoreboard == null) {
                 Bukkit.getScheduler().cancelTask(taskId);

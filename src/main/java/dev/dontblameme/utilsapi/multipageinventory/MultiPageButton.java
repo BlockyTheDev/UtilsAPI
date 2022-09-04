@@ -4,21 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
+@Getter
 public class MultiPageButton {
 
-    @Getter
     private final ItemStack item;
-    @Getter
     private final int inventorySlot;
-    @Getter
     @Setter
     private int pageToDisplay;
-    @Getter
     private final int pageToRedirect;
-    @Getter
     @Setter
     private ButtonType buttonType;
-    @Getter
     @Setter
     private boolean shouldStayWhenInvalid = false;
 

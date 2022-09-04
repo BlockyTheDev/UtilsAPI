@@ -7,6 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,8 +22,7 @@ public class MultiPageInventory {
      * @return Instance of the current state of the builder
      */
     public MultiPageInventory addPages(InventoryBuilder... inventories) {
-        for(InventoryBuilder inv : inventories)
-            pages.put(pages.size() + 1, inv);
+        Arrays.stream(inventories).forEach(i -> pages.put(pages.size() + 1, i));
         return this;
     }
 

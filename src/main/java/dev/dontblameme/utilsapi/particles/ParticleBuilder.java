@@ -11,8 +11,13 @@ import java.util.List;
 public class ParticleBuilder {
 
     private final Particle type;
-    private float x, y, z, speed = 0;
-    private float offsetX, offsetY, offsetZ = 0;
+    private float x = 0;
+    private float y = 0;
+    private float z = 0;
+    private float speed = 0;
+    private float offsetX = 0;
+    private float offsetY = 0;
+    private float offsetZ = 0;
     private int amount = 0;
     private List<Player> players = new ArrayList<>();
 

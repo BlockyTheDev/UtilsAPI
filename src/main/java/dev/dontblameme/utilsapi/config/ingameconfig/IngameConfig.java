@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -101,7 +102,7 @@ public class IngameConfig {
             if(keySplit.length == 1) {
                 ingameConfigEntries.add(new IngameConfigEntry(keySplit[0], Material.WRITABLE_BOOK, keySplit[0], config.getValue(keySplit[0]), TextParser.parseHexAndCodes(editingTitle), TextParser.parseHexAndCodes(editingTitleMessage.replace("%n%", keySplit[0])), e -> {
                     config.setValue(keySplit[0], e.newValue());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.player().openInventory(getInventory()), 0);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(JavaPlugin.getProvidingPlugin(Main.class), () -> e.player().openInventory(getInventory()), 0);
                 }));
                 continue;
             }
@@ -117,7 +118,7 @@ public class IngameConfig {
             // Valid sub section
             ingameConfigEntries.add(new IngameConfigEntry(keyName, Material.WRITABLE_BOOK, keyName, value, TextParser.parseHexAndCodes(editingTitle), TextParser.parseHexAndCodes(editingTitleMessage.replace("%n%", keyName)), e -> {
                 config.setValue(keyName, e.newValue(), keyPath.split("\\."));
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.player().openInventory(getInventory()), 0);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(JavaPlugin.getProvidingPlugin(Main.class), () -> e.player().openInventory(getInventory()), 0);
             }, keyPath.split("\\.")));
         }
     }
@@ -169,7 +170,7 @@ public class IngameConfig {
                         }
                     });
 
-                    es.submit(() -> Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> p.openInventory(getInventory()), 0L));
+                    es.submit(() -> Bukkit.getScheduler().scheduleSyncDelayedTask(JavaPlugin.getProvidingPlugin(Main.class), () -> p.openInventory(getInventory()), 0L));
                 });
 
                 builder.addItem(item);

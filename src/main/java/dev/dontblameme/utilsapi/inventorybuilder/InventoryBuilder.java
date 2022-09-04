@@ -4,11 +4,16 @@ import dev.dontblameme.utilsapi.main.Main;
 import dev.dontblameme.utilsapi.utils.TextParser;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -138,18 +143,15 @@ public class InventoryBuilder {
      * @return The inventory fully builded and ready to use
      */
     public Inventory build() {
-
         getInventory().getViewers().add(new ViewerHandler(this));
 
         getInventory().getViewers().add(new ViewerHandler((event, isPlayerInventory) -> {
-
             if(event instanceof InventoryDragEvent e && !isPlayerInventory && !getOptions().contains(Option.PUT_ITEM)) {
                 e.setCancelled(true);
                 return;
             }
 
             if(event instanceof InventoryClickEvent e) {
-
                 if(isPlayerInventory) {
 
                     if(!getOptions().contains(Option.PUT_ITEM) && e.getClick().isShiftClick())
@@ -158,21 +160,18 @@ public class InventoryBuilder {
                     // global disable due to spigot being ass again
                     if(!getOptions().contains(Option.TAKE_ITEM) && e.getAction() == InventoryAction.COLLECT_TO_CURSOR)
                         e.setCancelled(true);
-
                     return;
                 }
-
                 String action = e.getAction().name();
+                ArrayList<String> deniedTake = (ArrayList<String>) Arrays.asList("PICK", "DROP", "CLONE", "HOTBAR", "MOVE", "SWAP", "COLLECT", "UNKNOWN");
+                ArrayList<String> deniedPut = (ArrayList<String>) Arrays.asList("SWAP", "HOTBAR", "MOVE", "PLACE");
 
-                if(!getOptions().contains(Option.TAKE_ITEM) && (action.contains("PICK") || action.contains("DROP") || action.contains("CLONE") || action.contains("HOTBAR") || action.contains("MOVE") || action.contains("SWAP") || action.contains("COLLECT") || action.contains("UNKNOWN")))
+                if(!getOptions().contains(Option.TAKE_ITEM) && deniedTake.contains(action))
                     e.setCancelled(true);
 
-                if(!getOptions().contains(Option.PUT_ITEM) && (action.contains("SWAP") || action.contains("HOTBAR") || action.contains("MOVE") || action.contains("PLACE")))
+                if(!getOptions().contains(Option.PUT_ITEM) && deniedPut.contains(action))
                     e.setCancelled(true);
-
             }
-
-
         }));
 
         items.forEach(inventoryItem -> getInventory().setItem(inventoryItem.getSlot(), inventoryItem.getItem()));
@@ -234,7 +233,7 @@ public class InventoryBuilder {
     }
 
     private void startTask(AnimatedInventoryItem item) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(JavaPlugin.getProvidingPlugin(Main.class), () -> {
             if(getInventory() == null || getInventory().getViewers().size() < 3) {
                 if(taskRunning)
                     taskRunning = false;
